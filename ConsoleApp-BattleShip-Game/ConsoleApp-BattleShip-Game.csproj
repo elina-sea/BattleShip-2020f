@@ -6,4 +6,10 @@
         <RootNamespace>ConsoleApp_BattleShip_Game</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BattleShipConsoleUI\BattleShipConsoleUI.csproj" />
+      <ProjectReference Include="..\GameLogic\GameLogic.csproj" />
+      <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
+    </ItemGroup>
+
 </Project>

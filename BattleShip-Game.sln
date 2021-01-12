@@ -2,6 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp-BattleShip-Game", "ConsoleApp-BattleShip-Game\ConsoleApp-BattleShip-Game.csproj", "{81D43CBD-2E78-44AC-81CD-9B9FD266E3EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuSystem", "MenuSystem\MenuSystem.csproj", "{FA0C23EE-A349-4A66-90DA-E5D3750C5F74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleShipConsoleUI", "BattleShipConsoleUI\BattleShipConsoleUI.csproj", "{E20821A9-A6C8-44CF-8872-C76686E850A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEntities", "GameEntities\GameEntities.csproj", "{3108EE28-5570-45A5-83A6-EF05965D4F88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLogic", "GameLogic\GameLogic.csproj", "{4CB13509-A407-43CC-81A0-CEC0C90021EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +20,21 @@ Global
 		{81D43CBD-2E78-44AC-81CD-9B9FD266E3EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81D43CBD-2E78-44AC-81CD-9B9FD266E3EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81D43CBD-2E78-44AC-81CD-9B9FD266E3EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA0C23EE-A349-4A66-90DA-E5D3750C5F74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA0C23EE-A349-4A66-90DA-E5D3750C5F74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA0C23EE-A349-4A66-90DA-E5D3750C5F74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA0C23EE-A349-4A66-90DA-E5D3750C5F74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E20821A9-A6C8-44CF-8872-C76686E850A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E20821A9-A6C8-44CF-8872-C76686E850A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E20821A9-A6C8-44CF-8872-C76686E850A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E20821A9-A6C8-44CF-8872-C76686E850A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3108EE28-5570-45A5-83A6-EF05965D4F88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3108EE28-5570-45A5-83A6-EF05965D4F88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3108EE28-5570-45A5-83A6-EF05965D4F88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3108EE28-5570-45A5-83A6-EF05965D4F88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CB13509-A407-43CC-81A0-CEC0C90021EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CB13509-A407-43CC-81A0-CEC0C90021EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CB13509-A407-43CC-81A0-CEC0C90021EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CB13509-A407-43CC-81A0-CEC0C90021EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
