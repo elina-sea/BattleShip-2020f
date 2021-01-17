@@ -1,74 +1,85 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace GameEntities
 {
-    [System.Serializable]
+    [Serializable]
     public class Player
     {
+        //PK
+        public int PlayerId { get; set; }
+        public int OwnBoardId { get; set; }
+        public GameBoard OwnBoard { get; set; } = null!;
+        public int AttackBoardId { get; set; }
+        public GameBoard AttackBoard { get; set; } = null!;
+        public PlayerNumber PlayerNum;
+        public List<AvailableShip> AvailableShips = null!;
+        public Cell[] OwnSavedBoard { get; set; } = null!;
+        public Cell[] AttackSavedBoard { get; set; } = null!;
 
-
-        
         public Player()
         {
         }
 
-        public void FillBoardsAfterLoad(List<Cell> loadOwnBoard, List<Cell> loadAttackBoard)
+        public void FillBoardsAfterLoad(Cell[] loadOwnBoard, Cell[] loadAttackBoard)
         {
+            OwnBoard.Board = new Cell[OwnBoard.Height, OwnBoard.Width];
+            AttackBoard.Board = new Cell[AttackBoard.Height, AttackBoard.Width];
             foreach (var cell in loadOwnBoard)
             {
-                OwnBoard._board[cell._xPosition, cell._yPosition] = cell;
+                OwnBoard.Board[cell.XPosition, cell.YPosition] = cell;
             }
+
             foreach (var cell in loadAttackBoard)
             {
-                AttackBoard._board[cell._xPosition, cell._yPosition] = cell;
+                AttackBoard.Board[cell.XPosition, cell.YPosition] = cell;
             }
         }
-        public GameBoard OwnBoard { get; set; }
-        public GameBoard AttackBoard { get; set; }
-        public PlayerNumber PlayerNum;
-        public List<AvailableShip> AvailableShips;
-        public List<Cell> ownSavedBoard { get; set; }
-        public List<Cell> attackSavedBoard { get; set; }
 
-        public void FillDicts()
+        public void FillArrays()
         {
-            ownSavedBoard = new List<Cell>();
-            
-            attackSavedBoard = new List<Cell>();
-            for (int x = 0; x < OwnBoard._board.GetLength(0);x++)
+            OwnSavedBoard = new Cell[OwnBoard.GetCells().Length];
+            AttackSavedBoard = new Cell[AttackBoard.GetCells().Length];
+            int iterator = 0;
+            for (int x = 0; x < OwnBoard.Board.GetLength(0); x++)
             {
-                for (int y = 0; y < OwnBoard._board.GetLength(1);y++)
+                for (int y = 0; y < OwnBoard.Board.GetLength(1); y++)
                 {
-                    ownSavedBoard.Add(OwnBoard._board[x,y]);
+                    OwnSavedBoard[iterator] = OwnBoard.Board[x, y];
+                    iterator++;
                 }
             }
-            for (int x = 0; x < AttackBoard._board.GetLength(0);x++)
+
+            iterator = 0;
+            for (int x = 0; x < AttackBoard.Board.GetLength(0); x++)
             {
-                for (int y = 0; y < AttackBoard._board.GetLength(1);y++)
+                for (int y = 0; y < AttackBoard.Board.GetLength(1); y++)
                 {
-                    ownSavedBoard.Add(AttackBoard._board[x,y]);
+                    AttackSavedBoard[iterator] = AttackBoard.Board[x, y];
+                    iterator++;
                 }
             }
         }
+
 
         public enum PlayerNumber
         {
-            PalyerOne, PlayerTwo
+            PalyerOne,
+            PlayerTwo
         }
 
         public class AvailableShip
-        { 
+        {
             public Ship.ShipType type;
             public int numberOfShips;
+
             public AvailableShip(Ship.ShipType type, int numberOfShips)
             {
                 this.type = type;
                 this.numberOfShips = numberOfShips;
             }
         }
-        
+
 
         public Player(PlayerNumber num, int height, int width)
         {
@@ -82,7 +93,7 @@ namespace GameEntities
             AvailableShips.Add(new AvailableShip(Ship.ShipType.Cruiser, 3));
             AvailableShips.Add(new AvailableShip(Ship.ShipType.Patrol, 4));
         }
-        
+
         public int GetAmountOfBombedFields()
         {
             int count = 0;
@@ -94,8 +105,8 @@ namespace GameEntities
                     count++;
                 }
             }
+
             return count;
         }
     }
-    
 }

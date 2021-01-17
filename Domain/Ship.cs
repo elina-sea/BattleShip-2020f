@@ -2,6 +2,15 @@ namespace GameEntities
 {
     public class Ship
     {
+        //PK
+        public int ShipId { get; set; }
+        public ShipState shipState;
+        public ShipType shipType;
+        private int _size;
+        public bool isVertical;
+        private int _xPos;
+        private int _yPos;
+        
         public enum ShipType 
         {
             Carrier, Battleship, Submarine, Cruiser, Patrol
@@ -10,13 +19,6 @@ namespace GameEntities
         {
             Alive, Damaged, Drown
         }
-
-        public ShipState shipState;
-        public ShipType shipType;
-        private int size;
-        public bool isVertical;
-        private int xPos;
-        private int yPos;
 
         public static int GetShipSizeByShipType(ShipType type) //common parameter for all instances
         {
@@ -43,7 +45,7 @@ namespace GameEntities
         
         public Ship(ShipType type, bool isVertical, ShipState shipState)
         {
-            this.size = GetShipSizeByShipType(type);
+            this._size = GetShipSizeByShipType(type);
             this.isVertical = isVertical;
             this.shipState = shipState;
         }

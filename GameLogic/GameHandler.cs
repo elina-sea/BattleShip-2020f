@@ -14,10 +14,10 @@ namespace GameLogic
             set => _currentMoveByPlayerOne = value;
         }
 
-        public static Player Player1;
-        public static Player Player2;
+        public static Player Player1 = null!;
+        public static Player Player2 = null!;
         public static bool choosenShipIsAvailable;
-        private static ShipLocator currentLocator;
+        private static ShipLocator _currentLocator = null!;
 
         public static void ChosenShipToPlace()
         {
@@ -56,28 +56,28 @@ namespace GameLogic
 
         private static void SetCurrentLocatorAviableShip(Player.AvailableShip availableShip)
         {
-            currentLocator.AvailableShip = availableShip;
-            currentLocator.ship.shipType = availableShip.type;
+            _currentLocator.AvailableShip = availableShip;
+            _currentLocator.ship.shipType = availableShip.type;
         }
 
         public static void SetShipLocatorPosition(int x, int y)
         {
-            currentLocator.X = x;
-            currentLocator.Y = y;
+            _currentLocator.X = x;
+            _currentLocator.Y = y;
         }
 
         public static void CreateCurrentShipLocator(Ship.ShipType type = Ship.ShipType.Patrol)
         {
             Ship currentShip = new Ship(type, true, Ship.ShipState.Alive);
-            currentLocator = new ShipLocator(0, 0, currentShip);
+            _currentLocator = new ShipLocator(0, 0, currentShip);
         }
 
         //new 
         public static void PlaceShipForCurrentPlayer()
         {
             var curPlayer = _currentMoveByPlayerOne ? Player1 : Player2;
-            curPlayer.OwnBoard.PlaceShip(currentLocator.X, currentLocator.Y, currentLocator.ship.shipType,
-                    currentLocator.ship.isVertical, ref currentLocator.AvailableShip.numberOfShips);
+            curPlayer.OwnBoard.PlaceShip(_currentLocator.X, _currentLocator.Y, _currentLocator.ship.shipType,
+                    _currentLocator.ship.isVertical, ref _currentLocator.AvailableShip.numberOfShips);
         }
 
         //new 
@@ -95,7 +95,7 @@ namespace GameLogic
 
         public static void SetCurrentPlacedShipVertical(bool isVertical)
         {
-            currentLocator.ship.isVertical = isVertical;
+            _currentLocator.ship.isVertical = isVertical;
         }
 
         public static void PlayersMove()

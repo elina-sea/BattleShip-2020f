@@ -14,7 +14,7 @@ namespace MenuSystem
 
     public class Menu
     {
-        public string UserChoice;
+        public string UserChoice = null!;
         private static string EXIT_CODE = "x";
         //private static string CONFIRM_CODE = "c";
         private Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();

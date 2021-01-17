@@ -2,21 +2,26 @@
 
 namespace GameEntities
 {
-    [System.Serializable]
+    [Serializable]
     public class Cell
     {
-        public int _xPosition { get; set; }
-        public int _yPosition { get; set; }
+        //PK
+        public int CellId { get; set; }
+        //FK
+        public int BoardId { get; set; }
+        public int XPosition { get; set; }
+        public int YPosition { get; set; }
 
+        public Cell()
+        {
+        }
+        
         public Cell(CellState state)
         {
             _state = state;
         }
-        
-        public Cell()
-        {
-        }
 
+        //TODO move enums to separate folder
         [Serializable]
         public enum CellState //перечисление
         {

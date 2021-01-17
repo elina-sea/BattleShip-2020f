@@ -1,29 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using BattleShipConsoleUI;
+using Domain;
 using GameEntities;
 using GameLogic;
 using MenuSystem;
+using DAL;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BattleshipConsoleApp
 {
     class ProgramMain
     {
-        private static string jsonStateString;
+        private static string? _jsonStateString;
         private static string savePath = "save.json";
-        string userChoice = "";
+        private string _userChoice = "";
         static Menu menuALevel = new Menu(MenuLevel.FirstWhetherReady);
         static Menu menuBLevel = new Menu(MenuLevel.SecondGameMode);
-        static Menu menuShips = new Menu(MenuLevel.ShipsToPlace);
+        static Menu _menuShips = new Menu(MenuLevel.ShipsToPlace);
         static Menu menuPassOrExit = new Menu(MenuLevel.PassOrExit);
-        private static GameState currentGameState;
+        private static GameState _currentGameState = null!;
+        private static Test test = null!;
 
         static void Main()
         {
+            //TODO rename
             Console.WriteLine("<========== USELESS BATTLESHIP ==========>");
             Console.WriteLine("Welcome to the 'Pointless Battleship!'");
             Console.WriteLine("The most useless game you ever played!");
@@ -31,7 +36,41 @@ namespace BattleshipConsoleApp
             Console.WriteLine("Are you ready? (y/n)");
             Console.WriteLine("");
             CreateMainMenuItems();
+            //SaveTest();
+            //LoadTest();
             menuALevel.RunMenu();
+        }
+
+        private static void LoadTest()
+        {
+            using var db = new AppDbContext();
+            // apply all the new migrations
+            db.Database.Migrate();
+            Console.WriteLine("After SaveChanges");
+            Console.WriteLine(test.ToString());
+
+            Console.WriteLine("From db");
+            foreach (var dbTest in db.Tests)
+            {
+                Console.WriteLine(dbTest.TestString);
+            }
+        }
+
+        private static void SaveTest()
+        {
+            using var db = new AppDbContext();
+            // apply all the new migrations
+            db.Database.Migrate();
+            test = new Test()
+            {
+                TestString = "Goodbye!"
+            };
+            Console.WriteLine("Before add");
+            Console.WriteLine(test.ToString());
+            db.Tests.Add(test);
+            Console.WriteLine("After add");
+            Console.WriteLine(test.ToString());
+            db.SaveChanges();
         }
 
         private static void CreateMainMenuItems()
@@ -47,7 +86,7 @@ namespace BattleshipConsoleApp
             int width, height;
             var menuShips = new Menu(MenuLevel.ShipsToPlace);
             List<ShipLocator> shipsOnBoard = new List<ShipLocator>();
-            
+
             CreateShipMenuItems(menuShips);
             SetBoardSize(out width, out height);
 
@@ -89,6 +128,7 @@ namespace BattleshipConsoleApp
 
                 Console.WriteLine("Now make your next move:");
                 GameHandler.PlayersMove();
+                SaveGameState();
                 Console.WriteLine("Pass the deivce to the next player");
                 GameHandler.ChangePlayerTurn();
                 //menuPassOrExit.RunMenu();
@@ -270,29 +310,47 @@ namespace BattleshipConsoleApp
             Console.WriteLine("Bye");
         }
 
+        static void SaveDeserializedString(string s)
+        {
+            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "loaded.json"), s);
+        }
+
         static void LoadGameState()
         {
-            jsonStateString = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, savePath));
-            currentGameState = JsonSerializer.Deserialize<GameState>(jsonStateString);
-            GameHandler.Player1 = currentGameState.PlayerOne;
-            GameHandler.Player2 = currentGameState.PlayerTwo;
-            GameHandler.CurrentMoveByPlayerOne = currentGameState.CurrentMoveByPlayerOne;
-            //currentGameState.PlayerOne.FillBoardsAfterLoad(currentGameState.PlayerOne.ownSavedBoard, currentGameState.PlayerOne.attackSavedBoard);
-            //currentGameState.PlayerTwo.FillBoardsAfterLoad(currentGameState.PlayerTwo.ownSavedBoard, currentGameState.PlayerTwo.attackSavedBoard);
-            GameFlow();
+            //TODO safe file with a proper date-time format
+            //TODO Load from db
+
+            // THIS IS JSON PART
+
+            /*_jsonStateString = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, savePath));
+            GameState state = JsonSerializer.Deserialize<GameState>(_jsonStateString);
+            _currentGameState = state;
+            _currentGameState.PlayerOne.FillBoardsAfterLoad(_currentGameState.PlayerOne.OwnSavedBoard,_currentGameState.PlayerOne.AttackSavedBoard);
+            _currentGameState.PlayerTwo.FillBoardsAfterLoad(_currentGameState.PlayerTwo.OwnSavedBoard,_currentGameState.PlayerTwo.AttackSavedBoard);
+            SaveDeserializedString(_jsonStateString);*/
+
+            //THIS IS DB PART
+
+            
         }
 
         static void SaveGameState()
         {
-            currentGameState = new GameState();
-            currentGameState.CurrentMoveByPlayerOne = GameHandler.CurrentMoveByPlayerOne;
-            currentGameState.PlayerOne = GameHandler.Player1;
-            currentGameState.PlayerTwo = GameHandler.Player2;
-            currentGameState.PlayerOne.FillDicts();
-            currentGameState.PlayerTwo.FillDicts();
-            jsonStateString = JsonSerializer.Serialize(currentGameState, typeof(GameState));
-            File.WriteAllText(Path.Combine(Environment.CurrentDirectory,savePath), jsonStateString);
-            Console.WriteLine(Path.Combine(Environment.CurrentDirectory,savePath));
+            //DATABASE
+            using var db = new AppDbContext();
+            db.Database.Migrate();
+            db.GameStates.Add(_currentGameState);
+            db.SaveChanges();
+            
+            /*_currentGameState = new GameState();
+            _currentGameState.CurrentMoveByPlayerOne = GameHandler.CurrentMoveByPlayerOne;
+            _currentGameState.PlayerOne = GameHandler.Player1;
+            _currentGameState.PlayerTwo = GameHandler.Player2;
+            _currentGameState.PlayerOne.FillArrays();
+            _currentGameState.PlayerTwo.FillArrays();
+            _jsonStateString = JsonSerializer.Serialize(_currentGameState, typeof(GameState));
+            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, savePath), _jsonStateString);
+            Console.WriteLine(Path.Combine(Environment.CurrentDirectory, savePath));*/
         }
     }
 }

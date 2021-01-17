@@ -6,9 +6,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuSystem", "MenuSystem\Me
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleShipConsoleUI", "BattleShipConsoleUI\BattleShipConsoleUI.csproj", "{E20821A9-A6C8-44CF-8872-C76686E850A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEntities", "GameEntities\GameEntities.csproj", "{3108EE28-5570-45A5-83A6-EF05965D4F88}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{3108EE28-5570-45A5-83A6-EF05965D4F88}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLogic", "GameLogic\GameLogic.csproj", "{4CB13509-A407-43CC-81A0-CEC0C90021EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{37634634-7142-4AA0-A0D0-C7CA4F9C338F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +38,9 @@ Global
 		{4CB13509-A407-43CC-81A0-CEC0C90021EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CB13509-A407-43CC-81A0-CEC0C90021EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CB13509-A407-43CC-81A0-CEC0C90021EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37634634-7142-4AA0-A0D0-C7CA4F9C338F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37634634-7142-4AA0-A0D0-C7CA4F9C338F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37634634-7142-4AA0-A0D0-C7CA4F9C338F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37634634-7142-4AA0-A0D0-C7CA4F9C338F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
