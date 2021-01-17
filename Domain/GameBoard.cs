@@ -7,15 +7,14 @@ namespace GameEntities
     public class GameBoard
     {
         //PK
-        public int GameBoardId { get; set; }
+        //public int GameBoardId { get; set; }
         //FK
-        public int PlayerId { get; set; }
+        //public int PlayerId { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
-
-        //public ICollection<Cell> Board { get; set; } = null!;
-        public Cell[,] Board { get; set; } = null!;
-
+        
+        public Cell[,] Board = null!;
+        
         public GameBoard()
         {
         }

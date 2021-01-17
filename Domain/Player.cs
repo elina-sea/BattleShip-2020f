@@ -7,10 +7,10 @@ namespace GameEntities
     public class Player
     {
         //PK
-        public int PlayerId { get; set; }
-        public int OwnBoardId { get; set; }
+        //public int PlayerId { get; set; }
+        //public int OwnBoardId { get; set; }
         public GameBoard OwnBoard { get; set; } = null!;
-        public int AttackBoardId { get; set; }
+        //public int AttackBoardId { get; set; }
         public GameBoard AttackBoard { get; set; } = null!;
         public PlayerNumber PlayerNum;
         public List<AvailableShip> AvailableShips = null!;
@@ -34,6 +34,8 @@ namespace GameEntities
             {
                 AttackBoard.Board[cell.XPosition, cell.YPosition] = cell;
             }
+
+            Console.WriteLine(OwnBoard.Board.Length);
         }
 
         public void FillArrays()

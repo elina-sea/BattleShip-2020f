@@ -10,7 +10,7 @@ using GameLogic;
 using MenuSystem;
 using DAL;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+using System.Text.RegularExpressions;
 
 namespace BattleshipConsoleApp
 {
@@ -24,53 +24,19 @@ namespace BattleshipConsoleApp
         static Menu _menuShips = new Menu(MenuLevel.ShipsToPlace);
         static Menu menuPassOrExit = new Menu(MenuLevel.PassOrExit);
         private static GameState _currentGameState = null!;
-        private static Test test = null!;
 
         static void Main()
         {
             //TODO rename
-            Console.WriteLine("<========== USELESS BATTLESHIP ==========>");
-            Console.WriteLine("Welcome to the 'Pointless Battleship!'");
-            Console.WriteLine("The most useless game you ever played!");
+            Console.WriteLine("<========== THE BEST BATTLESHIP EVER CREATED (...by me) ==========>");
+            Console.WriteLine("Welcome to THE GREATEST Battleship!");
+            Console.WriteLine(
+                "Rules are simple: \n - Place ships (then game will be saved)\n - Shoot each other's ships\n - Win or be the loser!");
             Console.WriteLine("");
             Console.WriteLine("Are you ready? (y/n)");
             Console.WriteLine("");
             CreateMainMenuItems();
-            //SaveTest();
-            //LoadTest();
             menuALevel.RunMenu();
-        }
-
-        private static void LoadTest()
-        {
-            using var db = new AppDbContext();
-            // apply all the new migrations
-            db.Database.Migrate();
-            Console.WriteLine("After SaveChanges");
-            Console.WriteLine(test.ToString());
-
-            Console.WriteLine("From db");
-            foreach (var dbTest in db.Tests)
-            {
-                Console.WriteLine(dbTest.TestString);
-            }
-        }
-
-        private static void SaveTest()
-        {
-            using var db = new AppDbContext();
-            // apply all the new migrations
-            db.Database.Migrate();
-            test = new Test()
-            {
-                TestString = "Goodbye!"
-            };
-            Console.WriteLine("Before add");
-            Console.WriteLine(test.ToString());
-            db.Tests.Add(test);
-            Console.WriteLine("After add");
-            Console.WriteLine(test.ToString());
-            db.SaveChanges();
         }
 
         private static void CreateMainMenuItems()
@@ -131,7 +97,8 @@ namespace BattleshipConsoleApp
                 SaveGameState();
                 Console.WriteLine("Pass the deivce to the next player");
                 GameHandler.ChangePlayerTurn();
-                //menuPassOrExit.RunMenu();
+                Console.WriteLine("Remember to hit `s` if you want to save and continue your game later!");
+                menuPassOrExit.RunMenu();
             }
         }
 
@@ -139,7 +106,6 @@ namespace BattleshipConsoleApp
         {
             menuPassOrExit.AddMenuItem(new MenuItem("p", "Pass", GameHandler.ChangePlayerTurn));
             menuPassOrExit.AddMenuItem(new MenuItem("s", "Save Game", SaveGameState));
-            menuPassOrExit.AddMenuItem(new MenuItem("f", "Finish and exit", ClosingDown));
         }
 
         #region InitializeGameMethods
@@ -188,7 +154,7 @@ namespace BattleshipConsoleApp
             Console.WriteLine("Choose a ship to place:");
             while (GameHandler.CurrentPlayerAvilableShipsCount() > 0)
             {
-                Console.WriteLine($"\nAviable Ships for p1: {GameHandler.CurrentPlayerAvilableShipsCount()}");
+                Console.WriteLine($"\nAviable Ships for p2: {GameHandler.CurrentPlayerAvilableShipsCount()}");
                 //new 
                 GameHandler.CreateCurrentShipLocator();
                 menuShips.RunMenu(); // if ship is available then GameHandler.choosenShipIsAvailable = true other way false
@@ -204,7 +170,7 @@ namespace BattleshipConsoleApp
                 }
                 else
                 {
-                    Console.WriteLine("Ship is no available");
+                    Console.WriteLine("Ship is not available");
                 }
             }
 
@@ -238,18 +204,19 @@ namespace BattleshipConsoleApp
 
         private static void SetBoardSize(out int width, out int height)
         {
+            string pattern = "[5-30]";
             Console.WriteLine("Enter width of the board");
             Console.Write(">");
-            while (int.TryParse(Console.ReadLine(), out width) == false)
+            while (int.TryParse(Console.ReadLine(), out width)== false) 
             {
-                Console.WriteLine("Enter correct number");
+                Console.WriteLine("You entered wrong type or number is too small/big \n (minimum board size is 6x6, maximum - 30x30)");
             }
 
             Console.WriteLine("Enter height of the board");
             Console.Write(">");
             while (int.TryParse(Console.ReadLine(), out height) == false)
             {
-                Console.WriteLine("Enter correct number");
+                Console.WriteLine("You entered wrong type or number is too small/big \n (minimum board size is 6x6, maximum - 30x30)");
             }
         }
 
@@ -263,7 +230,8 @@ namespace BattleshipConsoleApp
                 () => SetPlacingShipType(Ship.ShipType.Submarine)));
             menuShips.AddMenuItem(new MenuItem("cr", "Cruiser - ◘◘", () => SetPlacingShipType(Ship.ShipType.Cruiser)));
             menuShips.AddMenuItem(new MenuItem("pa", "Patrol - ◘", () => SetPlacingShipType(Ship.ShipType.Patrol)));
-            menuShips.AddMenuItem(new MenuItem("s", "Save Game State", SaveGameState));
+            menuShips.AddMenuItem(new MenuItem("f", "Finish and exit (game won't be saved until you place all ships)",
+                ClosingDown));
         }
 
         #endregion
@@ -307,7 +275,7 @@ namespace BattleshipConsoleApp
 
         static void ClosingDown()
         {
-            Console.WriteLine("Bye");
+            Console.WriteLine("Oke, see you next time! \n Bye bye");
         }
 
         static void SaveDeserializedString(string s)
@@ -317,32 +285,29 @@ namespace BattleshipConsoleApp
 
         static void LoadGameState()
         {
-            //TODO safe file with a proper date-time format
-            //TODO Load from db
+            //THIS IS DB PART
+            using var db = new AppDbContext();
+            List<SavedGameData> data = db.SavedGameDataEntries.ToList();
+            _jsonStateString = data.Last().JsonData;
 
             // THIS IS JSON PART
-
-            /*_jsonStateString = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, savePath));
-            GameState state = JsonSerializer.Deserialize<GameState>(_jsonStateString);
-            _currentGameState = state;
-            _currentGameState.PlayerOne.FillBoardsAfterLoad(_currentGameState.PlayerOne.OwnSavedBoard,_currentGameState.PlayerOne.AttackSavedBoard);
-            _currentGameState.PlayerTwo.FillBoardsAfterLoad(_currentGameState.PlayerTwo.OwnSavedBoard,_currentGameState.PlayerTwo.AttackSavedBoard);
-            SaveDeserializedString(_jsonStateString);*/
-
-            //THIS IS DB PART
-
-            
+            //_jsonStateString = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, savePath));
+            _currentGameState = JsonSerializer.Deserialize<GameState>(_jsonStateString);
+            _currentGameState!.PlayerOne.FillBoardsAfterLoad(_currentGameState.PlayerOne.OwnSavedBoard,
+                _currentGameState.PlayerOne.AttackSavedBoard);
+            _currentGameState.PlayerTwo.FillBoardsAfterLoad(_currentGameState.PlayerTwo.OwnSavedBoard,
+                _currentGameState.PlayerTwo.AttackSavedBoard);
+            SaveDeserializedString(_jsonStateString);
+            GameHandler.Player1 = _currentGameState.PlayerOne;
+            GameHandler.Player2 = _currentGameState.PlayerTwo;
+            GameHandler.CurrentMoveByPlayerOne = _currentGameState.CurrentMoveByPlayerOne;
+            GameFlow();
         }
 
         static void SaveGameState()
         {
-            //DATABASE
-            using var db = new AppDbContext();
-            db.Database.Migrate();
-            db.GameStates.Add(_currentGameState);
-            db.SaveChanges();
-            
-            /*_currentGameState = new GameState();
+            //SERIALIZATION
+            _currentGameState = new GameState();
             _currentGameState.CurrentMoveByPlayerOne = GameHandler.CurrentMoveByPlayerOne;
             _currentGameState.PlayerOne = GameHandler.Player1;
             _currentGameState.PlayerTwo = GameHandler.Player2;
@@ -350,7 +315,20 @@ namespace BattleshipConsoleApp
             _currentGameState.PlayerTwo.FillArrays();
             _jsonStateString = JsonSerializer.Serialize(_currentGameState, typeof(GameState));
             File.WriteAllText(Path.Combine(Environment.CurrentDirectory, savePath), _jsonStateString);
-            Console.WriteLine(Path.Combine(Environment.CurrentDirectory, savePath));*/
+            //Console.WriteLine(Path.Combine(Environment.CurrentDirectory, savePath));
+
+            //DATABASE
+            using var db = new AppDbContext();
+            db.Database.Migrate();
+            SavedGameData data = new SavedGameData()
+            {
+                JsonData = _jsonStateString,
+                TimeStamp = DateTime.Now.ToLongDateString()
+            };
+            db.Add(data);
+            //Console.WriteLine(data.JsonData);
+            //Console.WriteLine(data.TimeStamp);
+            db.SaveChanges();
         }
     }
 }

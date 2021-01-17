@@ -6,9 +6,9 @@ namespace GameEntities
     public class Cell
     {
         //PK
-        public int CellId { get; set; }
+        //public int CellId { get; set; }
         //FK
-        public int BoardId { get; set; }
+        //public int BoardId { get; set; }
         public int XPosition { get; set; }
         public int YPosition { get; set; }
 
