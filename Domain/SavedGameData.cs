@@ -5,6 +5,7 @@ namespace GameEntities
 {
     public class SavedGameData
     {
+        [Key]
         public int SavedGameDataId { get; set; }
         //[MaxLength(2048)]
         public string JsonData { get; set; } = null!;

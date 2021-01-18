@@ -54,7 +54,6 @@ namespace MenuSystem
                         Console.WriteLine("x) eXit");
                         break;
                     case MenuLevel.SecondGameMode:
-                        Console.WriteLine("r) Return to main");
                         Console.WriteLine("x) eXit");
                         break;
                     case MenuLevel.ShipsToPlace:

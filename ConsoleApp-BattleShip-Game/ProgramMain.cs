@@ -10,7 +10,6 @@ using GameLogic;
 using MenuSystem;
 using DAL;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace BattleshipConsoleApp
 {
@@ -18,7 +17,7 @@ namespace BattleshipConsoleApp
     {
         private static string? _jsonStateString;
         private static string savePath = "save.json";
-        private string _userChoice = "";
+        public string _userChoice = "";
         static Menu menuALevel = new Menu(MenuLevel.FirstWhetherReady);
         static Menu menuBLevel = new Menu(MenuLevel.SecondGameMode);
         static Menu _menuShips = new Menu(MenuLevel.ShipsToPlace);
@@ -184,7 +183,7 @@ namespace BattleshipConsoleApp
             Console.Write(">");
             while (true)
             {
-                string answer = Console.ReadLine();
+                string answer = Console.ReadLine()!;
                 if (answer == "v")
                 {
                     GameHandler.SetCurrentPlacedShipVertical(true);
@@ -204,17 +203,16 @@ namespace BattleshipConsoleApp
 
         private static void SetBoardSize(out int width, out int height)
         {
-            string pattern = "[5-30]";
             Console.WriteLine("Enter width of the board");
             Console.Write(">");
-            while (int.TryParse(Console.ReadLine(), out width)== false) 
+            while (int.TryParse(Console.ReadLine(), out width) == false && width >= 7 && width <= 30) 
             {
                 Console.WriteLine("You entered wrong type or number is too small/big \n (minimum board size is 6x6, maximum - 30x30)");
             }
 
             Console.WriteLine("Enter height of the board");
             Console.Write(">");
-            while (int.TryParse(Console.ReadLine(), out height) == false)
+            while (int.TryParse(Console.ReadLine(), out height) == false && height >= 7 && height <= 30)
             {
                 Console.WriteLine("You entered wrong type or number is too small/big \n (minimum board size is 6x6, maximum - 30x30)");
             }
