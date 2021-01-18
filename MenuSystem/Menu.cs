@@ -13,11 +13,9 @@ namespace MenuSystem
 
     public class Menu
     {
-        public string UserChoice = null!;
-
+        public static string UserChoice = null!;
         private static string EXIT_CODE = "x";
-
-        //private static string CONFIRM_CODE = "c";
+        
         private Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
         private readonly MenuLevel _menuLevel;
 
@@ -59,7 +57,6 @@ namespace MenuSystem
                     case MenuLevel.ShipsToPlace:
                         break;
                     case MenuLevel.PassOrExit:
-                        Console.WriteLine("x) eXit");
                         break;
                     default:
                         throw new Exception("Unknown location");

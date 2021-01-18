@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading.Channels;
 using BattleShipConsoleUI;
 using Domain;
 using GameEntities;
@@ -23,6 +25,7 @@ namespace BattleshipConsoleApp
         static Menu _menuShips = new Menu(MenuLevel.ShipsToPlace);
         static Menu menuPassOrExit = new Menu(MenuLevel.PassOrExit);
         private static GameState _currentGameState = null!;
+        private static bool _shipMenuExit;
 
         static void Main()
         {
@@ -35,7 +38,9 @@ namespace BattleshipConsoleApp
             Console.WriteLine("Are you ready? (y/n)");
             Console.WriteLine("");
             CreateMainMenuItems();
+            Console.WriteLine("========================");
             menuALevel.RunMenu();
+            Console.WriteLine("========================");
         }
 
         private static void CreateMainMenuItems()
@@ -59,23 +64,30 @@ namespace BattleshipConsoleApp
             GameHandler.Player1 = new Player(Player.PlayerNumber.PalyerOne, height, width);
             GameHandler.Player2 = new Player(Player.PlayerNumber.PlayerTwo, height, width);
             //BOARDS' CREATION AND SAVING
+            _shipMenuExit = false;
             FirstPlayerShipPlacement(width, height, menuShips);
             GameHandler.ChangePlayerTurn();
             SeconPlayerShipPlacement(width, height, menuShips);
             GameHandler.ChangePlayerTurn();
             SaveGameState();
-            CreatePassMenuItems();
             GameFlow();
         }
 
         private static void GameFlow()
         {
+            Console.WriteLine("===========================");
+            Console.WriteLine("");
+            Console.WriteLine(" NOW LET'S START THE GAME");
+            Console.WriteLine("");
+            Console.WriteLine("===========================");
+            CreatePassMenuItems();
             //GAME PROCCESS
             while (GameHandler.Player1.GetAmountOfBombedFields() <= 25 ||
                    GameHandler.Player2.GetAmountOfBombedFields() <= 25)
             {
                 if (GameHandler.CurrentMoveByPlayerOne)
                 {
+                    Console.WriteLine("");
                     Console.WriteLine("PLAYER'S 1 TURN: \n This is your board:");
                     BattleShipConsoleUi.DrawBoard(GameHandler.Player1.OwnBoard);
                     Console.WriteLine(
@@ -84,6 +96,7 @@ namespace BattleshipConsoleApp
                 }
                 else
                 {
+                    Console.WriteLine("");
                     Console.WriteLine("PLAYER'S 2 TURN: \n This is your board:");
                     BattleShipConsoleUi.DrawBoard(GameHandler.Player2.OwnBoard);
                     Console.WriteLine(
@@ -94,17 +107,20 @@ namespace BattleshipConsoleApp
                 Console.WriteLine("Now make your next move:");
                 GameHandler.PlayersMove();
                 SaveGameState();
-                Console.WriteLine("Pass the deivce to the next player");
-                GameHandler.ChangePlayerTurn();
-                Console.WriteLine("Remember to hit `s` if you want to save and continue your game later!");
+                Console.WriteLine("=====================================");
+                Console.WriteLine(" Pass the device to the next player?");
+                Console.WriteLine(" Remember to hit `s` if you want to save and continue your game later!");
                 menuPassOrExit.RunMenu();
+                Console.WriteLine("=====================================");
             }
         }
 
         private static void CreatePassMenuItems()
         {
-            menuPassOrExit.AddMenuItem(new MenuItem("p", "Pass", GameHandler.ChangePlayerTurn));
+            menuPassOrExit.AddMenuItem(new MenuItem("p", "Pass", () => Console.WriteLine("Switching user...")));
             menuPassOrExit.AddMenuItem(new MenuItem("s", "Save Game", SaveGameState));
+            menuPassOrExit.AddMenuItem(new MenuItem("f", "Finish and exit (save before this!)",
+                ClosingDown));
         }
 
         #region InitializeGameMethods
@@ -112,12 +128,14 @@ namespace BattleshipConsoleApp
         private static void FirstPlayerShipPlacement(int width, int height, Menu menuShips)
         {
             //PLAYER ONE PLACES SHIPS
-            Console.WriteLine("This is Player One board:");
+            Console.WriteLine("===========================");
+            Console.WriteLine(" This is Player One board:");
             GameHandler.Player1.OwnBoard = new GameBoard(height, width, true);
             BattleShipConsoleUi.DrawBoard(GameHandler.Player1.OwnBoard);
             Console.WriteLine("Let's start placing ships one by one");
             Console.WriteLine("Choose a ship to place:");
-            while (GameHandler.CurrentPlayerAvilableShipsCount() > 0)
+            Console.WriteLine("===========================");
+            while (GameHandler.CurrentPlayerAvilableShipsCount() > 0 && _shipMenuExit == false)
             {
                 Console.WriteLine($"\nAviable Ships for p1: {GameHandler.CurrentPlayerAvilableShipsCount()}");
                 //new 
@@ -135,7 +153,9 @@ namespace BattleshipConsoleApp
                 }
                 else
                 {
-                    Console.WriteLine("Ship is no available");
+                    Console.WriteLine("=======================");
+                    Console.WriteLine(" Ship is not available,\nChoose another one");
+                    Console.WriteLine("=======================");
                 }
             }
 
@@ -146,12 +166,14 @@ namespace BattleshipConsoleApp
         private static void SeconPlayerShipPlacement(int width, int height, Menu menuShips)
         {
             //PLAYER TWO PLACES SHIPS
-            Console.WriteLine("This is Player Two board:");
+            Console.WriteLine("===========================");
+            Console.WriteLine(" This is Player Two board:");
             GameHandler.Player2.OwnBoard = new GameBoard(height, width, true);
             BattleShipConsoleUi.DrawBoard(GameHandler.Player2.OwnBoard);
             Console.WriteLine("Let's start placing ships one by one");
             Console.WriteLine("Choose a ship to place:");
-            while (GameHandler.CurrentPlayerAvilableShipsCount() > 0)
+            Console.WriteLine("===========================");
+            while (GameHandler.CurrentPlayerAvilableShipsCount() > 0 && _shipMenuExit == false)
             {
                 Console.WriteLine($"\nAviable Ships for p2: {GameHandler.CurrentPlayerAvilableShipsCount()}");
                 //new 
@@ -169,7 +191,9 @@ namespace BattleshipConsoleApp
                 }
                 else
                 {
-                    Console.WriteLine("Ship is not available");
+                    Console.WriteLine("=======================");
+                    Console.WriteLine(" Ship is not available,\nChoose another one");
+                    Console.WriteLine("=======================");
                 }
             }
 
@@ -179,6 +203,7 @@ namespace BattleshipConsoleApp
 
         private static void PlayerChooseOrientation()
         {
+            Console.WriteLine("============================");
             Console.WriteLine(" v for vertical orientation \n h for horizontal orientation");
             Console.Write(">");
             while (true)
@@ -196,40 +221,66 @@ namespace BattleshipConsoleApp
                 }
                 else
                 {
-                    Console.WriteLine("Enter correct value");
+                    Console.WriteLine("=====================");
+                    Console.WriteLine(" Enter correct value");
+                    Console.WriteLine("=====================");
                 }
             }
         }
 
         private static void SetBoardSize(out int width, out int height)
         {
-            Console.WriteLine("Enter width of the board");
+            Console.WriteLine("==========================");
+            Console.WriteLine(" Enter width of the board");
             Console.Write(">");
-            while (int.TryParse(Console.ReadLine(), out width) == false && width >= 7 && width <= 30) 
+            while (int.TryParse(Console.ReadLine(), out width) == true)
             {
-                Console.WriteLine("You entered wrong type or number is too small/big \n (minimum board size is 6x6, maximum - 30x30)");
+                if (width >= 7 && width <= 30)
+                    break;
+                Console.WriteLine("===================================================");
+                Console.WriteLine(" You entered wrong type or number is too small/big \n (minimum board size is 6x6, maximum - 30x30)");
+                Console.WriteLine("===================================================");
             }
-
+            Console.WriteLine("==========================");
             Console.WriteLine("Enter height of the board");
             Console.Write(">");
-            while (int.TryParse(Console.ReadLine(), out height) == false && height >= 7 && height <= 30)
+            while (int.TryParse(Console.ReadLine(), out height) == true)
             {
-                Console.WriteLine("You entered wrong type or number is too small/big \n (minimum board size is 6x6, maximum - 30x30)");
+                if (width >= 7 && height <= 30)
+                    break;
+                Console.WriteLine("===================================================");
+                Console.WriteLine(" You entered wrong type or number is too small/big \n (minimum board size is 6x6, maximum - 30x30)");
+                Console.WriteLine("===================================================");
             }
         }
 
         private static void CreateShipMenuItems(Menu menuShips)
         {
             menuShips.AddMenuItem(
-                new MenuItem("ca", "Carrier - ◘◘◘◘◘", () => SetPlacingShipType(Ship.ShipType.Carrier)));
+                new MenuItem("ca", "Carrier - ◘◘◘◘◘", 
+                    () => SetPlacingShipType(Ship.ShipType.Carrier)));
             menuShips.AddMenuItem(new MenuItem("ba", "Battleship - ◘◘◘◘",
                 () => SetPlacingShipType(Ship.ShipType.Battleship)));
             menuShips.AddMenuItem(new MenuItem("su", "Submarine - ◘◘◘",
                 () => SetPlacingShipType(Ship.ShipType.Submarine)));
-            menuShips.AddMenuItem(new MenuItem("cr", "Cruiser - ◘◘", () => SetPlacingShipType(Ship.ShipType.Cruiser)));
-            menuShips.AddMenuItem(new MenuItem("pa", "Patrol - ◘", () => SetPlacingShipType(Ship.ShipType.Patrol)));
-            menuShips.AddMenuItem(new MenuItem("f", "Finish and exit (game won't be saved until you place all ships)",
+            menuShips.AddMenuItem(new MenuItem("cr", "Cruiser - ◘◘",
+                () => SetPlacingShipType(Ship.ShipType.Cruiser)));
+            menuShips.AddMenuItem(new MenuItem("pa", "Patrol - ◘",
+                () => SetPlacingShipType(Ship.ShipType.Patrol)));
+            menuShips.AddMenuItem(new MenuItem("f", "Finish and exit (will not be saved)",
                 ClosingDown));
+            menuShips.AddMenuItem(new MenuItem("r", "Return to the main menu",
+                ExitToMainMenu));
+            // this is for debugging only
+            menuShips.AddMenuItem(new MenuItem("s", "Save Game", SaveGameState));
+        }
+
+        private static void ExitToMainMenu()
+        {
+            _shipMenuExit = true;
+            Console.WriteLine("========================");
+            menuBLevel.RunMenu();
+            Console.WriteLine("========================");
         }
 
         #endregion
@@ -248,11 +299,14 @@ namespace BattleshipConsoleApp
         static int UserChoiceXPosition()
         {
             int x;
-            Console.WriteLine("Enter x position of the chosen ship");
+            Console.WriteLine("=====================================");
+            Console.WriteLine(" Enter x position of the chosen ship");
             Console.Write(">");
             while (int.TryParse(Console.ReadLine(), out x) == false)
             {
-                Console.WriteLine("Enter correct number");
+                Console.WriteLine("======================");
+                Console.WriteLine(" Enter correct number");
+                Console.WriteLine("======================");
             }
 
             return x;
@@ -265,7 +319,9 @@ namespace BattleshipConsoleApp
             Console.Write(">");
             while (int.TryParse(Console.ReadLine(), out y) == false)
             {
-                Console.WriteLine("Enter correct number");
+                Console.WriteLine("======================");
+                Console.WriteLine(" Enter correct number");
+                Console.WriteLine("======================");
             }
 
             return y;
@@ -273,7 +329,9 @@ namespace BattleshipConsoleApp
 
         static void ClosingDown()
         {
-            Console.WriteLine("Oke, see you next time! \n Bye bye");
+            Console.WriteLine("================================");
+            Console.WriteLine(" Oke, see you next time! In the \n<=== BEST BATTLESHIP EVER ===> \n Bye bye, captain!");
+            Environment.Exit(0);
         }
 
         static void SaveDeserializedString(string s)

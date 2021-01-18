@@ -41,8 +41,9 @@ namespace GameLogic
                         //CreateCurrentShipLocator(type);
                         choosenShipIsAvailable = true;
                         SetCurrentLocatorAviableShip(sh);
-                        
+                        Console.WriteLine("=================================================================");
                         Console.WriteLine($"Ship {type.ToString()} chosen for placement! available: {sh.numberOfShips.ToString()}");
+                        Console.WriteLine("=================================================================");
                         break;
                     }
                     if (sh.numberOfShips == 0)
@@ -115,33 +116,48 @@ namespace GameLogic
             Console.Write(">");
             while (int.TryParse(Console.ReadLine(), out x) == false)
             {
-                Console.WriteLine("Enter correct number");
+                Console.WriteLine("======================");
+                Console.WriteLine(" Enter correct number ");
+                Console.WriteLine("======================");
             }
 
             Console.WriteLine("Enter y position of field to attack:");
             Console.Write(">");
             while (int.TryParse(Console.ReadLine(), out y) == false)
             {
-                Console.WriteLine("Enter correct number");
+                Console.WriteLine("======================");
+                Console.WriteLine(" Enter correct number ");
+                Console.WriteLine("======================");
             }
 
+            x = x - 1;
+            y = y - 1;
             switch (defendingPlayer.OwnBoard.GetCells()[x, y].GetCellState())
             {
                 case Cell.CellState.Bombed:
-                    Console.WriteLine("You have already attacked this ship. Try again");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("You have already attacked this ship. Try again \n (Hit `p`, but expect one more try)");
+                    Console.WriteLine("=================================================");
                     break;
                 case Cell.CellState.Missed:
-                    Console.WriteLine("You have already attacked this field and it was empty. Try again");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("You have already attacked this field and it was empty. Try again \n (Hit `p`, but expect one more try)");
+                    Console.WriteLine("=================================================");
                     break;
                 case Cell.CellState.Empty:
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("Unfortunately, this field is empty. It will be marked as missed now");
+                    Console.WriteLine("=================================================");
                     defendingPlayer.OwnBoard.GetCells()[x, y].ChangeCellState(Cell.CellState.Missed);
                     attackingPlayer.AttackBoard.GetCells()[x, y].ChangeCellState(Cell.CellState.Missed);
-                    Console.WriteLine("Unfortunately, this field is empty. It will be marked as missed now");
+                    ChangePlayerTurn();
                     break;
                 case Cell.CellState.Ship:
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("Congrats! You have hit the ship! Now you can make one more move! \n (Hit `p`, but expect one more try)");
+                    Console.WriteLine("=================================================");
                     defendingPlayer.OwnBoard.GetCells()[x, y].ChangeCellState(Cell.CellState.Bombed);
-                    attackingPlayer.OwnBoard.GetCells()[x, y].ChangeCellState(Cell.CellState.Bombed);
-                    Console.WriteLine("Congats! You have hit the ship! Now you can make one more move!");
+                    attackingPlayer.AttackBoard.GetCells()[x, y].ChangeCellState(Cell.CellState.Bombed);
                     break;
             }
         }
@@ -154,7 +170,7 @@ namespace GameLogic
             }
             else
             {
-                _currentMoveByPlayerOne = false;
+                _currentMoveByPlayerOne = true;
             }
         }
     }
